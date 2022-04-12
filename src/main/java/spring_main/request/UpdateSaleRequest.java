@@ -11,8 +11,7 @@ import java.io.Serializable;
 @Setter
 @JsonSerialize
 @AllArgsConstructor
-public class SaleCreationRequest implements Serializable {
-    private Long good_id;
+public class UpdateSaleRequest implements Serializable {
+    private Long id;
     private Integer good_count;
-    private String create_date;
 }

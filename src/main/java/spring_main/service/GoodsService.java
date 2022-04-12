@@ -1,14 +1,20 @@
 package spring_main.service;
 
-import spring_main.entity.*;
-import spring_main.request.*;
+import spring_main.entity.Good;
+import spring_main.request.GoodCreationRequest;
+
 import java.util.List;
+
 
 public interface GoodsService {
 
-    public Good findGoodById(Long id);
-    public Good findGoodByName(String name);
-    public List<Good> listGoods();
-    public void createGood(GoodCreationRequest good);
-    public void dropAll();
+    Good findGoodById(Long id);
+
+    Good findGoodByName(String name);
+
+    List<Good> listGoods();
+
+    Good createGood(GoodCreationRequest good);
+
+    void dropAll();
 }

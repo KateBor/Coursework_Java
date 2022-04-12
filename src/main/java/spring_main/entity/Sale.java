@@ -1,11 +1,15 @@
 package spring_main.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -22,10 +26,11 @@ public class Sale {
     private Integer good_count;
 
     @Column(name = "create_date", nullable = false)
-    private Timestamp create_date; //???????????????????
+    private Date create_date;
 
     @ManyToOne
-    @JoinColumn(name="good_id",referencedColumnName="id")
+    @JoinColumn(name="good_id", referencedColumnName="id")
+    @JsonManagedReference
     private Good good;
 
     @Override
@@ -37,5 +42,4 @@ public class Sale {
                 ", create_date=" + create_date +
                 '}';
     }
-
 }

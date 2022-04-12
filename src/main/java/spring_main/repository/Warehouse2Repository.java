@@ -12,7 +12,7 @@ public interface Warehouse2Repository extends CrudRepository<Warehouse2, Long> {
     Warehouse2 findByGood_id(Long good_id);
 
     @Modifying
-    @Query("update Warehouse2 w set w.good_count = ?2 where w.good.id = ?1")
+    @Query("update Warehouse2 w set w.good_count = w.good_count + ?2 where w.good.id = ?1")
     void updateGood_count(Long good_id, int count);
 
     @Modifying

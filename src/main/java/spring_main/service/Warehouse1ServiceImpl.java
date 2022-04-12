@@ -4,9 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import spring_main.entity.Good;
 import spring_main.entity.Warehouse1;
-import spring_main.exception.*;
-import spring_main.repository.*;
-import spring_main.request.*;
+import spring_main.exception.entityNotFoundException;
+import spring_main.repository.GoodsRepository;
+import spring_main.repository.Warehouse1Repository;
+import spring_main.request.WarehouseCreationRequest;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -21,16 +22,6 @@ public class Warehouse1ServiceImpl implements Warehouse1Service{
     private Warehouse1Repository warehouse1Repository;
 
     @Override
-    public Warehouse1 findWarehouse1ById(Long id) {
-        Optional<Warehouse1> optionalWarehouse1 = warehouse1Repository.findById(id);
-        if (optionalWarehouse1.isPresent()) {
-            return optionalWarehouse1.get();
-        } else {
-            throw new entityNotFoundException("Can't find this good in warehouse1");
-        }
-    }
-
-    @Override
     public Warehouse1 findWarehouse1ByGoodId(Long good_id) {
         return warehouse1Repository.findByGood_id(good_id);
     }
@@ -42,7 +33,7 @@ public class Warehouse1ServiceImpl implements Warehouse1Service{
 
     @Transactional
     @Override
-    public void addGoodsToWarehouse1(WarehouseCreationRequest warehouse) {
+    public Warehouse1 addGoodToWarehouse1(WarehouseCreationRequest warehouse) {
         Warehouse1 warehouse1ToCreate = new Warehouse1();
         warehouse1ToCreate.setGood_count(warehouse.getGood_count());
 
@@ -50,12 +41,13 @@ public class Warehouse1ServiceImpl implements Warehouse1Service{
         if (optionalGood.isPresent()) {
             Warehouse1 warehouse1 = warehouse1Repository.findByGood_id(warehouse.getGood_id());
             if (warehouse1 != null) {
-                warehouse1Repository.updateGood_count(warehouse1.getId(), warehouse1ToCreate.getGood_count());
-                warehouse1Repository.findByGood_id(warehouse.getGood_id());
+                warehouse1Repository.updateGood_count(warehouse1.getGood().getId(), warehouse1ToCreate.getGood_count());
+                return warehouse1Repository.findByGood_id(warehouse.getGood_id());
             } else {
                 warehouse1ToCreate.setGood(optionalGood.get());
                 warehouse1Repository.save(warehouse1ToCreate);
             }
+            return warehouse1ToCreate;
         } else {
             throw new entityNotFoundException("Can't store not existing good");
         }
@@ -69,25 +61,10 @@ public class Warehouse1ServiceImpl implements Warehouse1Service{
 
     @Transactional
     @Override
-    public void deleteGoodsFromWarehouse1(Long id) {
-        warehouse1Repository.deleteById(id);
-    }
-
-    @Override
-    public void updateGoodsCount(Long good_id, int count) {
-        Warehouse1 opWarehouse1 = warehouse1Repository.findByGood_id(good_id);
-        if (opWarehouse1 != null) {
-            warehouse1Repository.updateGood_count(good_id, count);
-        } else {
-            Optional<Good> optionalGood = goodsRepository.findById(good_id);
-            if (optionalGood.isPresent()) {
-                Warehouse1 warehouse1 = new Warehouse1();
-                warehouse1.setGood(optionalGood.get());
-                warehouse1.setGood_count(count);
-                warehouse1Repository.save(warehouse1);
-            } else {
-                throw new entityNotFoundException("Can't update not existing good");
-            }
+    public void deleteGoodsFromWarehouse1(Long good_id) {
+        Warehouse1 warehouse1 = warehouse1Repository.findByGood_id(good_id);
+        if(warehouse1 != null) {
+            warehouse1Repository.deleteById(warehouse1.getId());
         }
     }
 }

@@ -1,5 +1,7 @@
 package spring_main.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,14 +27,22 @@ public class Good {
     private Float priority;
 
 
+    @JsonBackReference
     @OneToMany(mappedBy = "good")
     private List<Sale> sales;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "good")
     private Warehouse1 warehouse1;
 
+    @JsonBackReference
     @OneToOne(mappedBy = "good")
     private Warehouse2 warehouse2;
+
+    public Good(String name, float priority){
+        this.name = name;
+        this.priority = priority;
+    }
 
     @Override
     public String toString() {

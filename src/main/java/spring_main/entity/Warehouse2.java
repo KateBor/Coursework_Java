@@ -1,5 +1,6 @@
 package spring_main.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,8 @@ public class Warehouse2 {
 
     @OneToOne
     @JoinColumn(name="good_id",referencedColumnName="id")
+
+    @JsonManagedReference
     private Good good;
 
     @Override

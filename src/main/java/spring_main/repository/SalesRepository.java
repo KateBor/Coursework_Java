@@ -6,13 +6,10 @@ import org.springframework.stereotype.Repository;
 import spring_main.entity.Sale;
 import org.springframework.data.repository.CrudRepository;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
 public interface SalesRepository extends CrudRepository<Sale, Long> {
-    @Query("select s from Sale s where s.create_date = ?1")
-    List<Sale> findAllByCreate_date(Timestamp create_date);
 
     @Query("select s from Sale s where s.good.id = ?1")
     List<Sale> findAllByGood_id(Long good_id);

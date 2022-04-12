@@ -6,14 +6,15 @@ import spring_main.entity.Good;
 import spring_main.entity.Sale;
 import spring_main.entity.Warehouse1;
 import spring_main.entity.Warehouse2;
-import spring_main.exception.*;
+import spring_main.exception.InvalidDateException;
+import spring_main.exception.entityNotFoundException;
 import spring_main.repository.*;
-import spring_main.request.*;
+import spring_main.request.SaleCreationRequest;
 
 import javax.transaction.Transactional;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class SalesServiceImpl implements SalesService{
@@ -37,13 +38,8 @@ public class SalesServiceImpl implements SalesService{
         }
     }
 
-//    @Override
-//    public List<Sale> findSaleByDate(Timestamp date) { // переделать!!!!!!!!!!!!!!!!!!!!!!!
-//            return salesRepository.findAllByCreate_date(date);
-//    }
-
     @Override
-    public List<Sale> findSaleByGood_id(Long good_id) {
+    public List<Sale> findSalesByGood_id(Long good_id) {
         return salesRepository.findAllByGood_id(good_id);
     }
 
@@ -63,7 +59,13 @@ public class SalesServiceImpl implements SalesService{
     public Sale createSale(SaleCreationRequest sale) {
         Sale saleToCreate = new Sale();
         saleToCreate.setGood_count(sale.getGood_count());
-        saleToCreate.setCreate_date(sale.getCreate_date());
+        Date date;
+        try {
+            date = new SimpleDateFormat("dd/MM/yyyy-H:m").parse(sale.getCreate_date());
+        } catch (ParseException e) {
+            throw new InvalidDateException("Invalid data type, please fill all gaps");
+        }
+        saleToCreate.setCreate_date(date);
         Optional<Good> optionalGood = goodsRepository.findById(sale.getGood_id());
 
         if (optionalGood.isPresent()) {
@@ -150,7 +152,7 @@ public class SalesServiceImpl implements SalesService{
                 return;
             }
             if (diff < 0) { //возврат на склад
-                salesRepository.updateGood_count(sale.getId(), count);
+                salesRepository.updateGood_count(id, count);
                 if (warehouse1 != null) {
                     warehouse1Repository.updateGood_count(warehouse1.getGood().getId(), warehouse1.getGood_count() - diff);
                 } else if (warehouse2 != null) {
@@ -179,7 +181,7 @@ public class SalesServiceImpl implements SalesService{
                             diff = 0;
                             warehouse1Repository.delete(warehouse1);
                         } else {
-                            diff -= warehouse1.getGood_count(); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            diff -= warehouse1.getGood_count();
                             warehouse1Repository.delete(warehouse1);
                         }
                     }

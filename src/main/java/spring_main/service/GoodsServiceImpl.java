@@ -1,12 +1,12 @@
 package spring_main.service;
 
-import spring_main.entity.*;
-import spring_main.exception.*;
+import spring_main.entity.Good;
+import spring_main.exception.entityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import spring_main.repository.*;
-import spring_main.request.*;
+import spring_main.repository.GoodsRepository;
+import spring_main.request.GoodCreationRequest;
 
 import javax.transaction.Transactional;
 import java.util.LinkedList;
@@ -24,9 +24,8 @@ public class GoodsServiceImpl implements GoodsService {
         Optional<Good> optionalGood = goodsRepository.findById(id);
         if (optionalGood.isPresent()) {
             return optionalGood.get();
-        } else {
-            throw new entityNotFoundException("Can't find this good");
         }
+        throw new entityNotFoundException("Can't find this good");
     }
 
     @Override
@@ -45,7 +44,7 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public void createGood(GoodCreationRequest good) {
+    public Good createGood(GoodCreationRequest good) {
         Good goodToCreate = new Good();
         BeanUtils.copyProperties(good, goodToCreate);
         goodToCreate.setSales(new LinkedList<>());
@@ -55,12 +54,13 @@ public class GoodsServiceImpl implements GoodsService {
         } else {
             System.out.println("This good has already existed");
         }
+        return goodToCreate;
     }
+
 
     @Transactional
     @Override
     public void dropAll() {
         goodsRepository.dropAll();
     }
-
 }

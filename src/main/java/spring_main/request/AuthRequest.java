@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GoodCreationRequest implements Serializable {
-    private final String name;
-    private final float priority;
+public class AuthRequest implements Serializable {
+    private String userName;
+    private  String password;
 }
